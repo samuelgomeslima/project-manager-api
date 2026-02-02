@@ -13,8 +13,8 @@ export class UsersRepositoryService
     super(UserEntity, dataSource.createEntityManager());
   }
 
-  findById(id: number): Promise<IUser | null> {
-    return this.findOneBy({ id });
+  findById(id: number): Promise<IUser> {
+    return this.findOneByOrFail({ id });
   }
 
   add(payload: DeepPartial<IUser>): Promise<IUser> {
