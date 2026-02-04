@@ -18,7 +18,7 @@ export class ProjectsRepositoryService
   }
 
   findById(userId: number, id: number): Promise<IProject | null> {
-    return this.findOneBy({ id, user: { id: userId } });
+    return this.findOneByOrFail({ id, user: { id: userId } });
   }
 
   add(payload: DeepPartial<IProject>) {
