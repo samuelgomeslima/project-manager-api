@@ -3,9 +3,13 @@ import { ProjectsRepositoryService } from './repositories/projects.repository.se
 import { TasksRepositoryService } from './repositories/tasks.repository.service';
 import { UsersRepositoryService } from './repositories/users.repository.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProjectEntity } from './entities/project.entity';
+import { TaskEntity } from './entities/task.entity';
+import { UserEntity } from './entities/user.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([TaskEntity, ProjectEntity, UserEntity]),
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'db/sql.sqlite',
