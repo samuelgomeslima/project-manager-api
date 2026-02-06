@@ -15,10 +15,6 @@ export class GetAllProjectsService implements BaseUseCase {
     const userData = await this.usersRepository.findById(userId);
     const projects = await this.projectsRepository.findAll(userData.id);
 
-    if (!projects) {
-      throw new Error(`No projects found for user with ID ${userData.id}.`);
-    }
-
     return projects;
   }
 }
