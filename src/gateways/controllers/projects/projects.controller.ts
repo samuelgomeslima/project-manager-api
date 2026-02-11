@@ -13,8 +13,7 @@ import { CreateProjectService } from 'src/domain/use-cases/projects/create-proje
 import { GetAllProjectsService } from 'src/domain/use-cases/projects/get-all-projects.service';
 import { GetProjectByIdService } from 'src/domain/use-cases/projects/get-project-by-id.service';
 import { CreateProjectDto } from './dtos/create-project.dto';
-
-const loggedUser = 1;
+import { AuthenticatedRequest } from 'src/common/interfaces/authenticated-request.interface';
 
 @Controller('projects')
 export class ProjectsController {
@@ -25,9 +24,10 @@ export class ProjectsController {
   ) {}
 
   @Get()
-  findAll(): Promise<IProject[]> {
+  findAll(@Req() request): Promise<IProject[]> {
     try {
-      return this.getAllProjectsUseCase.execute(loggedUser);
+      const loggedUser = (request as AuthenticatedRequest).user;
+      return this.getAllProjectsUseCase.execute(loggedUser.sub);
     } catch (error) {
       throw new NotFoundException(error);
     }
@@ -36,9 +36,10 @@ export class ProjectsController {
   @Get(':id')
   findById(@Req() request, @Param('id') id: number) {
     try {
+      const loggedUser = (request as AuthenticatedRequest).user;
       return this.getProjectByIdUseCase.execute({
         projectId: id,
-        userId: loggedUser,
+        userId: loggedUser.sub,
       });
     } catch (error) {
       throw new NotFoundException(error);
@@ -48,9 +49,10 @@ export class ProjectsController {
   @Post()
   create(@Req() request, @Body() createProjectDto: CreateProjectDto) {
     try {
+      const loggedUser = (request as AuthenticatedRequest).user;
       return this.createProjectUseCase.execute({
         project: createProjectDto,
-        userId: loggedUser,
+        userId: loggedUser.sub,
       });
     } catch (error) {
       throw new UnprocessableEntityException(error);

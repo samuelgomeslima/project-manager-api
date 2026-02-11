@@ -12,8 +12,7 @@ import { CreateTaskService } from 'src/domain/use-cases/tasks/create-task.servic
 import { GetAllTasksService } from 'src/domain/use-cases/tasks/get-all-tasks.service';
 import { GetTaskByIdService } from 'src/domain/use-cases/tasks/get-task-by-id.service';
 import { CreateTaskDto } from './dtos/create-task.dto';
-
-const loggetUser = 1;
+import { AuthenticatedRequest } from 'src/common/interfaces/authenticated-request.interface';
 
 @Controller('tasks')
 export class TasksController {
@@ -24,24 +23,26 @@ export class TasksController {
   ) {}
 
   @Get()
-  findAll() {
+  findAll(@Req() request) {
     console.log('Getting all tasks');
 
     try {
-      return this.getAllTasksUseCase.execute({ userId: loggetUser });
+      const loggedUser = (request as AuthenticatedRequest).user;
+      return this.getAllTasksUseCase.execute({ userId: loggedUser.sub });
     } catch (error) {
       throw new NotFoundException(error);
     }
   }
 
   @Get(':id')
-  findById(@Req() req, @Param('id') taskId: number) {
+  findById(@Req() request, @Param('id') taskId: number) {
     console.log('Getting task by ID:', taskId);
 
     try {
+      const loggedUser = (request as AuthenticatedRequest).user;
       return this.getTaskByIdUseCase.execute({
         taskId: taskId,
-        userId: loggetUser,
+        userId: loggedUser.sub,
       });
     } catch (error) {
       throw new NotFoundException(error);
@@ -49,13 +50,14 @@ export class TasksController {
   }
 
   @Post()
-  create(@Req() req, @Body() createTaskDto: CreateTaskDto) {
+  create(@Req() request, @Body() createTaskDto: CreateTaskDto) {
     console.log('Creating task with data:', createTaskDto);
 
     try {
+      const loggedUser = (request as AuthenticatedRequest).user;
       return this.createTaskUseCase.execute({
         task: createTaskDto,
-        userId: loggetUser,
+        userId: loggedUser.sub,
       });
     } catch (error) {
       throw new UnprocessableEntityException(error);
